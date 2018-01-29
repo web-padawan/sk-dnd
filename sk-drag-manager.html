@@ -191,19 +191,18 @@ This program is available under Apache License Version 2.0, available at https:/
         _createAvatar() {
           var avatar = this._draggable.cloneNode(true);
 
+          /*
+          TODO: uncomment
           this._avatarTemplate = document.createElement('template');
           this._avatarTemplate.content.appendChild(avatar);
-          const Templatizer = Polymer.Templatize.templatize(this._avatarTemplate, this, {
-            instanceProps: {
-              detail: true,
-              target: true
-            }
-          });
+          const Templatizer = Polymer.Templatize.templatize(this._avatarTemplate, this, {});
 
           this._instance = new Templatizer({});
           const div = document.createElement('div');
           div.appendChild(this._instance.root);
           this._avatar = div.firstElementChild;
+          */
+          this._avatar = avatar;
         }
 
         _getPointerShift() {
