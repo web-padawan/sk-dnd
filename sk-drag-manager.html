@@ -70,7 +70,7 @@ This program is available under Apache License Version 2.0, available at https:/
           if (!elem) {
             return;
           }
-          
+
           this._draggable = elem;
           this._downX = e.pageX;
           this._downY = e.pageY;
@@ -88,11 +88,22 @@ This program is available under Apache License Version 2.0, available at https:/
 
             this._createAvatar();
 
-            var coords = this._getCoords(this._draggable);
-            this._shiftX = this._downX - coords.left;
-            this._shiftY = this._downY - coords.top;
+            this._getPointerShift();
+
+            this._copyStylesToAvatar();
 
             this._startDrag();
+          }
+
+          const target = this._findDropzone(e);
+
+          if (this._targetElement && this._targetElement !== target) {
+            this._markDragLeave(this._targetElement);
+          }
+
+          if (target) {
+            this._targetElement = target;
+            this._markDragEnter(this._targetElement);
           }
 
           this._avatar.style.left = e.pageX - this._shiftX + 'px';
@@ -110,7 +121,7 @@ This program is available under Apache License Version 2.0, available at https:/
                 this._processDrag(dropzone, this._draggable);
               }
             }
-            
+
             this._finishDrag();
           }
         }
@@ -149,10 +160,31 @@ This program is available under Apache License Version 2.0, available at https:/
               target: true
             }
           });
-          
+
           this._instance = new Templatizer({});
-          this._avatar = document.createElement('div');
-          this._avatar.appendChild(this._instance.root);
+          const div = document.createElement('div');
+          div.appendChild(this._instance.root);
+          this._avatar = div.firstElementChild;
+        }
+
+        _getPointerShift() {
+          const coords = this._getCoords(this._draggable);
+          this._shiftX = this._downX - coords.left;
+          this._shiftY = this._downY - coords.top;
+        }
+
+        _needSkipProp(prop) {
+          return /^(position|z|top|left|float|flex|grid|order|webkit)/.test(prop);
+        }
+
+        _copyStylesToAvatar() {
+          const source = window.getComputedStyle(this._draggable);
+          const target = this._avatar.style;
+          for (var prop in source) {
+            if (source.hasOwnProperty(prop) && !this._needSkipProp(prop)) {
+              target[prop] = source[prop];
+            }
+          }
         }
 
         _startDrag() {
@@ -180,16 +212,30 @@ This program is available under Apache License Version 2.0, available at https:/
           this._avatarTemplate = null;
         }
 
-        _tryAction(dropzone, handler, fallback) {
-          return typeof dropzone[handler] === 'function' ? dropzone[handler].bind(dropzone)(this._draggable) : fallback;
+        _tryAction(target, handler, fallback, param) {
+          return typeof target[handler] === 'function' ? target[handler].bind(target)(param) : fallback;
+        }
+
+        _markDragEnter(dropzone) {
+          const isProcessed = this._tryAction(dropzone, 'handleDragEnter', false, this._avatar);
+          if (!isProcessed) {
+            dropzone.classList.add('drag-over');
+          }
+        }
+
+        _markDragLeave(dropzone) {
+          const isProcessed = this._tryAction(dropzone, 'handleDragLeave', false, this._avatar);
+          if (!isProcessed) {
+            dropzone.classList.remove('drag-over');
+          }
         }
 
         _confirmDrag(dropzone) {
-          return this._tryAction(dropzone, 'confirmDrop', true);
+          return this._tryAction(dropzone, 'confirmDrop', true, this._draggable);
         }
 
         _processDrag(dropzone) {
-          const isProcessed = this._tryAction(dropzone, 'processDrop', false);
+          const isProcessed = this._tryAction(dropzone, 'processDrop', false, this._draggable);
           if (!isProcessed) {
             dropzone.appendChild(this._draggable);
           }

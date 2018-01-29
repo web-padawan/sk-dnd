@@ -6,6 +6,100 @@
       }
     </style>
 
+    <h3>Drag Enter and Leave</h3>
+    <vaadin-demo-snippet id="dnd-enter-leave-demo">
+      <template preserve-content>
+        <x-enter-leave></x-enter-leave>
+
+        <dom-module id="x-enter-leave">
+          <template preserve-content>
+            <style>
+              .wrapper {
+                overflow: hidden;
+              }
+
+              /* for demonstration purpose only */
+              sk-draggable,
+              sk-dropzone {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100px;
+                height: 100px;
+              }
+
+              sk-draggable {
+                float: left;
+                border: solid 1px gray;
+              }
+
+              sk-dropzone {
+                float: right;
+                margin-left: 20px;
+                background: #ddd;
+              }
+            </style>
+
+            <div class="wrapper">
+              <sk-draggable>
+                <vaadin-button>Foo</vaadin-button>
+              </sk-draggable>
+              <sk-dropzone handle-drag-enter="[[_markRed]]" handle-drag-leave="[[_clearFill]]"></sk-dropzone>
+              <sk-dropzone handle-drag-enter="[[_markBlue]]" handle-drag-leave="[[_clearFill]]"></sk-dropzone>
+            </div>
+
+          </template>
+          <script>
+            window.addDemoReadyListener('#dnd-enter-leave-demo', function(document) {
+              Polymer({
+                is: 'x-enter-leave',
+
+                properties: {
+                  _clearFill: {
+                    type: Function,
+                    value: function() {
+                      return function(target) {
+                        this.style.backgroundColor = '';
+                        target.style.borderColor = '';
+                        target.style.borderWidth = '';
+                        target.style.borderStyle = '';
+                        return true;
+                      };
+                    }
+                  },
+                  _markRed: {
+                    type: Function,
+                    value: function() {
+                      return function(target) {
+                        this.style.backgroundColor = '#eee';
+                        target.style.borderColor = 'red';
+                        target.style.borderWidth = '1px';
+                        target.style.borderStyle = 'solid';
+                        return true;
+                      };
+                    }
+                  },
+                  _markBlue: {
+                    type: Function,
+                    value: function() {
+                      return function(target) {
+                        this.style.backgroundColor = '#eee';
+                        target.style.borderColor = 'blue';
+                        target.style.borderWidth = '1px';
+                        target.style.borderStyle = 'solid';
+                        return true;
+                      };
+                    }
+                  }
+                }
+              });
+            });
+          </script>
+        </dom-module>
+
+      </template>
+    </vaadin-demo-snippet>
+
     <h3>Confirm Drop</h3>
     <vaadin-demo-snippet id="dnd-confirm-drop-demo">
       <template preserve-content>
