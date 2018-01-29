@@ -1,0 +1,61 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="sk-drag-manager.html">
+
+<dom-module id="sk-draggable">
+  <template>
+    <style>
+      :host {
+        display: block;
+        cursor: -webkit-grab;
+        cursor: grab;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      :host ::slotted(*) {
+        cursor: -webkit-grab;
+        cursor: grab;
+      }
+
+      :host([dragging]),
+      :host([dragging]) ::slotted(*) {
+        opacity: 0.8;
+        cursor: -webkit-grabbing;
+        cursor: grabbing;
+      }
+    </style>
+    <slot></slot>
+  </template>
+
+  <script>
+    (function() {
+
+      /**
+       * `<sk-draggable>` is a Polymer 2 element.
+       *
+       * @memberof Vaadin
+       */
+      class SkDragggable extends Polymer.Element {
+        static get is() {
+          return 'sk-draggable';
+        }
+      }
+
+      customElements.define(SkDragggable.is, SkDragggable);
+
+      /**
+       * @namespace Vaadin
+       */
+      window.Vaadin = window.Vaadin || {};
+      Vaadin.SkDragggable = SkDragggable;
+    })();
+  </script>
+</dom-module>

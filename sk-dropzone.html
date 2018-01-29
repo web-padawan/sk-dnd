@@ -5,13 +5,13 @@ This program is available under Apache License Version 2.0, available at https:/
 -->
 
 <link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../vaadin-themable-mixin/vaadin-themable-mixin.html">
+<link rel="import" href="sk-drag-manager.html">
 
-<dom-module id="sk-dnd">
+<dom-module id="sk-dropzone">
   <template>
     <style>
       :host {
-        display: inline-block;
+        display: block;
       }
 
       :host([hidden]) {
@@ -25,33 +25,23 @@ This program is available under Apache License Version 2.0, available at https:/
     (function() {
 
       /**
-       * `<sk-dnd>` is a Polymer 2 element.
-       *
-       * ```
-       * <sk-dnd></sk-dnd>
-       * ```
+       * `<sk-dropzone>` is a Polymer 2 element.
        *
        * @memberof Vaadin
-       * @demo demo/index.html
        */
-      class SkDnd extends Vaadin.ThemableMixin(Polymer.Element) {
+      class SkDropzone extends Polymer.Element {
         static get is() {
-          return 'sk-dnd';
-        }
-
-        static get properties() {
-          return {
-          };
+          return 'sk-dropzone';
         }
       }
 
-      customElements.define(SkDnd.is, SkDnd);
+      customElements.define(SkDropzone.is, SkDropzone);
 
       /**
        * @namespace Vaadin
        */
       window.Vaadin = window.Vaadin || {};
-      Vaadin.SkDnd = SkDnd;
+      Vaadin.SkDropzone = SkDropzone;
     })();
   </script>
 </dom-module>

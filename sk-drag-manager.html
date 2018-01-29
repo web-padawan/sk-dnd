@@ -1,0 +1,187 @@
+<!--
+@license
+Copyright (c) 2017 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+-->
+
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/utils/templatize.html">
+
+<dom-module id="sk-drag-manager">
+  <script>
+    (function() {
+
+      /**
+       * @memberof Vaadin
+       */
+      class SkDragManager extends Polymer.Element {
+        static get is() {
+          return 'sk-drag-manager';
+        }
+
+        static get properties() {
+          return {
+            _downX: {
+              type: Number
+            },
+
+            _downY: {
+              type: Number
+            },
+
+            _draggable: {
+              type: Object
+            },
+
+            _shiftX: {
+              type: Number
+            },
+
+            _shiftY: {
+              type: Number
+            }
+          };
+        }
+
+        constructor() {
+          super();
+
+          this._boundOnMouseDown = this._onMouseDown.bind(this);
+          this._boundOnMouseMove = this._onMouseMove.bind(this);
+          this._boundOnMouseUp = this._onMouseUp.bind(this);
+          this._boundOnDragStart = this._onDragStart.bind(this);
+        }
+
+        ready() {
+          super.ready();
+
+          document.addEventListener('mousedown', this._boundOnMouseDown);
+          document.addEventListener('mousemove', this._boundOnMouseMove);
+          document.addEventListener('mouseup', this._boundOnMouseUp);
+          document.addEventListener('dragstart', this._boundOnDragStart);
+        }
+
+        _onMouseDown(e) {
+          if (e.which !== 1) {
+            return;
+          }
+
+          var elem = this._findDraggable(e);
+          if (!elem) {
+            return;
+          }
+          
+          this._draggable = elem;
+          this._downX = e.pageX;
+          this._downY = e.pageY;
+        }
+
+        _onMouseMove(e) {
+          if (!this._draggable) {
+            return;
+          }
+
+          if (!this._avatar) {
+            this._createAvatar();
+
+            var coords = this._getCoords(this._draggable);
+            this._shiftX = this._downX - coords.left;
+            this._shiftY = this._downY - coords.top;
+
+            this._startDrag();
+          }
+
+          this._avatar.style.left = e.pageX - this._shiftX + 'px';
+          this._avatar.style.top = e.pageY - this._shiftY + 'px';
+        }
+
+        _onMouseUp(e) {
+          if (this._avatar) {
+            const dropzone = this._findDropzone(e);
+            if (dropzone) {
+              dropzone.appendChild(this._draggable);
+            }
+            
+            this._cancelDrag();
+          }
+        }
+
+        _onDragStart(e) {
+          e.preventDefault();
+        }
+
+        _findDraggable(e) {
+          return this._getNodeFromPath(e, 'sk-draggable');
+        }
+
+        _findDropzone(e) {
+          return this._getNodeFromPath(e, 'sk-dropzone');
+        }
+
+        _getNodeFromPath(e, nodeName) {
+          const path = e.composedPath();
+          for (let i = 0; i < path.length; i++) {
+            const node = path[i];
+            if (node.nodeType === Node.ELEMENT_NODE && node.localName.toLowerCase() === nodeName) {
+              return node;
+            }
+          }
+          return null;
+        }
+
+        _createAvatar() {
+          var avatar = this._draggable.cloneNode(true);
+
+          this._avatarTemplate = document.createElement('template');
+          this._avatarTemplate.content.appendChild(avatar);
+          const Templatizer = Polymer.Templatize.templatize(this._avatarTemplate, this, {
+            instanceProps: {
+              detail: true,
+              target: true
+            }
+          });
+          
+          this._instance = new Templatizer({});
+          this._avatar = document.createElement('div');
+          this._avatar.appendChild(this._instance.root);
+        }
+
+        _startDrag() {
+          this._avatar.style.position = 'absolute';
+          this._avatar.style.zIndex = '9999';
+          this._avatar.style.pointerEvents = 'none';
+          this._avatar.firstElementChild.setAttribute('dragging', '');
+          document.body.appendChild(this._avatar);
+        }
+
+        _getCoords(elem) {
+          var box = elem.getBoundingClientRect();
+
+          return {
+            top: box.top + pageYOffset,
+            left: box.left + pageXOffset
+          };
+        }
+
+        _cancelDrag() {
+          document.body.removeChild(this._avatar);
+          this._draggable = null;
+          this._avatar = null;
+          this._instance = null;
+          this._avatarTemplate = null;
+        }
+      }
+
+      customElements.define(SkDragManager.is, SkDragManager);
+
+      /**
+       * @namespace Vaadin
+       */
+      window.Vaadin = window.Vaadin || {};
+      Vaadin.SkDragManager = SkDragManager;
+
+      Vaadin.SkDragManager.instance = document.createElement('sk-drag-manager');
+      document.body.appendChild(Vaadin.SkDragManager.instance);
+    })();
+  </script>
+</dom-module>

@@ -1,17 +1,46 @@
 <dom-module id="element-basic-demos">
   <template>
     <style>
-       :host {
+      :host {
         display: block;
       }
-
     </style>
-
 
     <h3>Sample example</h3>
     <vaadin-demo-snippet id='element-basic-demos-sample-example'>
       <template preserve-content>
-        <sk-dnd>Foobar</sk-dnd>
+        <div class="wrapper">
+          <sk-draggable>
+            <vaadin-button>Foo</vaadin-button>
+          </sk-draggable>
+          <sk-dropzone></sk-dropzone>
+        </div>
+        <style>
+          .wrapper {
+            overflow: hidden;
+          }
+
+          /* for demonstration purpose only */
+          sk-draggable,
+          sk-dropzone {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 100px;
+          }
+
+          sk-draggable {
+            float: left;
+            border: solid 1px gray;
+          }
+
+          sk-dropzone {
+            float: right;
+            clear: right;
+            background: #ddd;
+          }
+        </style>
       </template>
     </vaadin-demo-snippet>
   </div>
