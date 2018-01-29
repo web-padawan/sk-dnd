@@ -12,17 +12,11 @@ This program is available under Apache License Version 2.0, available at https:/
     <style>
       :host {
         display: block;
-        cursor: -webkit-grab;
-        cursor: grab;
+        position: relative;
       }
 
       :host([hidden]) {
         display: none !important;
-      }
-
-      :host ::slotted(*) {
-        cursor: -webkit-grab;
-        cursor: grab;
       }
 
       :host([dragging]),
@@ -31,7 +25,16 @@ This program is available under Apache License Version 2.0, available at https:/
         cursor: -webkit-grabbing;
         cursor: grabbing;
       }
+
+      :host ::slotted([slot="drag-handle"]) {
+        position: absolute;
+        top: 0;
+        left: 0;
+        cursor: -webkit-grab;
+        cursor: grab;
+      }
     </style>
+    <slot name="drag-handle"></slot>
     <slot></slot>
   </template>
 

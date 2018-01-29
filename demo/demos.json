@@ -3,10 +3,20 @@
   "pages": [
   {
     "name": "Basic Examples",
-    "url": "element-basic-demos",
-    "src": "element-basic-demos.html",
+    "url": "drag-basic-demos",
+    "src": "drag-basic-demos.html",
     "meta": {
       "title": "sk-dnd Basic Examples",
+      "description": "",
+      "image": ""
+     }
+  },
+  {
+    "name": "Drag Handle",
+    "url": "drag-handle-demos",
+    "src": "drag-handle-demos.html",
+    "meta": {
+      "title": "sk-dnd Drag Handle Examples",
       "description": "",
       "image": ""
      }

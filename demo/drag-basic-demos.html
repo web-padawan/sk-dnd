@@ -1,4 +1,4 @@
-<dom-module id="element-basic-demos">
+<dom-module id="drag-basic-demos">
   <template>
     <style>
       :host {
@@ -259,14 +259,14 @@
 
       </template>
     </vaadin-demo-snippet>
-  </div>
+
   </template>
   <script>
-    class ElementBasicDemos extends DemoReadyEventEmitter(ElementDemo(Polymer.Element)) {
+    class DragBasicDemos extends DemoReadyEventEmitter(ElementDemo(Polymer.Element)) {
       static get is() {
-        return 'element-basic-demos';
+        return 'drag-basic-demos';
       }
     }
-    customElements.define(ElementBasicDemos.is, ElementBasicDemos);
+    customElements.define(DragBasicDemos.is, DragBasicDemos);
   </script>
 </dom-module>

@@ -132,6 +132,7 @@ This program is available under Apache License Version 2.0, available at https:/
 
         _onMouseUp(e) {
           if (this._avatar) {
+
             const dropzone = this._findDropzone(e);
 
             if (dropzone) {
@@ -153,22 +154,38 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _findDraggable(e) {
-          return this._getNodeFromPath(e, 'sk-draggable');
+          const node = this._getNodeFromPath(e, 'sk-draggable');
+          if (node && node.querySelector('[slot="drag-handle"]')) {
+            return this._isDragHandleActive(e) ? node : null;
+          }
+          return node;
         }
 
         _findDropzone(e) {
           return this._getNodeFromPath(e, 'sk-dropzone');
         }
 
-        _getNodeFromPath(e, nodeName) {
+        _iterateNodes(e, cb) {
           const path = e.composedPath();
           for (let i = 0; i < path.length; i++) {
             const node = path[i];
-            if (node.nodeType === Node.ELEMENT_NODE && node.localName.toLowerCase() === nodeName) {
+            if (cb(node)) {
               return node;
             }
           }
           return null;
+        }
+
+        _getNodeFromPath(e, nodeName) {
+          return this._iterateNodes(e, node => {
+            return node.nodeType === Node.ELEMENT_NODE && node.localName.toLowerCase() === nodeName;
+          });
+        }
+
+        _isDragHandleActive(e) {
+          return Boolean(this._iterateNodes(e, node => {
+            return node.nodeType === Node.ELEMENT_NODE && node.getAttribute('slot') === 'drag-handle';
+          }));
         }
 
         _createAvatar() {
@@ -213,7 +230,7 @@ This program is available under Apache License Version 2.0, available at https:/
           this._avatar.style.position = 'absolute';
           this._avatar.style.zIndex = '9999';
           this._avatar.style.pointerEvents = 'none';
-          this._avatar.firstElementChild.setAttribute('dragging', '');
+          this._avatar.setAttribute('dragging', '');
           document.body.appendChild(this._avatar);
         }
 

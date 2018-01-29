@@ -1,0 +1,74 @@
+<dom-module id="drag-handle-demos">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+    <h3>Drag Handle</h3>
+    <vaadin-demo-snippet id="dnd-drag-handle-demo">
+      <template preserve-content>
+        <x-drag-handle></x-drag-handle>
+
+        <dom-module id="x-drag-handle">
+          <template preserve-content>
+            <style>
+              .wrapper {
+                overflow: hidden;
+              }
+
+              /* for demonstration purpose only */
+              sk-draggable,
+              sk-dropzone {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100px;
+                height: 100px;
+              }
+
+              sk-draggable {
+                float: left;
+                border: solid 1px gray;
+              }
+
+              sk-dropzone {
+                float: right;
+                margin-left: 20px;
+                background: #ddd;
+              }
+            </style>
+
+            <div class="wrapper">
+              <sk-draggable>
+                <vaadin-button>Foo</vaadin-button>
+                <iron-icon icon="lumo:cog" slot="drag-handle"></iron-icon>
+              </sk-draggable>
+              <sk-dropzone></sk-dropzone>
+            </div>
+
+          </template>
+          <script>
+            window.addDemoReadyListener('#dnd-drag-handle-demo', function(document) {
+              Polymer({
+                is: 'x-drag-handle'
+              });
+            });
+          </script>
+        </dom-module>
+
+      </template>
+    </vaadin-demo-snippet>
+
+
+  </template>
+  <script>
+    class DragHandleDemos extends DemoReadyEventEmitter(ElementDemo(Polymer.Element)) {
+      static get is() {
+        return 'drag-handle-demos';
+      }
+    }
+    customElements.define(DragHandleDemos.is, DragHandleDemos);
+  </script>
+</dom-module>
