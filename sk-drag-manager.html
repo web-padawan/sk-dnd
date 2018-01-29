@@ -11,6 +11,26 @@ This program is available under Apache License Version 2.0, available at https:/
   <script>
     (function() {
 
+      const DropHandlers = {
+        append: function(host, target) {
+          host.appendChild(target);
+        },
+        prepend: function(host, target) {
+          if (host.firstElementChild) {
+            host.insertBefore(target, host.firstElementChild);
+          } else {
+            this.append(host, target);
+          }
+        },
+        replace: function(host, target) {
+          if (host.firstElementChild) {
+            host.replaceChild(target, host.firstElementChild);
+          } else {
+            this.append(host, target);
+          }
+        }
+      };
+
       /**
        * @memberof Vaadin
        */
@@ -120,6 +140,8 @@ This program is available under Apache License Version 2.0, available at https:/
               if (confirm) {
                 this._processDrag(dropzone, this._draggable);
               }
+
+              this._markDragLeave(dropzone);
             }
 
             this._finishDrag();
@@ -252,6 +274,8 @@ This program is available under Apache License Version 2.0, available at https:/
 
       Vaadin.SkDragManager.instance = document.createElement('sk-drag-manager');
       document.body.appendChild(Vaadin.SkDragManager.instance);
+
+      Vaadin.SkDragManager.DropHandlers = DropHandlers;
     })();
   </script>
 </dom-module>

@@ -239,11 +239,7 @@
                     type: Function,
                     value: function() {
                       return function(draggable) {
-                        if (!this.firstElementChild) {
-                          return false;
-                        }
-                        this.insertBefore(draggable, this.firstElementChild);
-                        return true;
+                        return Vaadin.SkDragManager.DropHandlers.prepend(this, draggable);
                       };
                     }
                   },
@@ -251,11 +247,7 @@
                     type: Function,
                     value: function() {
                       return function(draggable) {
-                        if (!this.firstElementChild) {
-                          return false;
-                        }
-                        this.replaceChild(draggable, this.firstElementChild);
-                        return true;
+                        return Vaadin.SkDragManager.DropHandlers.replace(this, draggable);
                       };
                     }
                   }
