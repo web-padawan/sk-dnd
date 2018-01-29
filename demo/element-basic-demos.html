@@ -6,41 +6,171 @@
       }
     </style>
 
-    <h3>Sample example</h3>
-    <vaadin-demo-snippet id='element-basic-demos-sample-example'>
+    <h3>Confirm Drop</h3>
+    <vaadin-demo-snippet id="dnd-confirm-drop-demo">
       <template preserve-content>
-        <div class="wrapper">
-          <sk-draggable>
-            <vaadin-button>Foo</vaadin-button>
-          </sk-draggable>
-          <sk-dropzone></sk-dropzone>
-        </div>
-        <style>
-          .wrapper {
-            overflow: hidden;
-          }
+        <x-confirm></x-confirm>
 
-          /* for demonstration purpose only */
-          sk-draggable,
-          sk-dropzone {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100px;
-            height: 100px;
-          }
+        <dom-module id="x-confirm">
+          <template preserve-content>
+            <style>
+              .wrapper {
+                overflow: hidden;
+              }
 
-          sk-draggable {
-            float: left;
-            border: solid 1px gray;
-          }
+              /* for demonstration purpose only */
+              sk-draggable,
+              sk-dropzone {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100px;
+                height: 100px;
+              }
 
-          sk-dropzone {
-            float: right;
-            clear: right;
-            background: #ddd;
-          }
-        </style>
+              sk-draggable {
+                float: left;
+                border: solid 1px gray;
+              }
+
+              sk-dropzone {
+                float: right;
+                margin-left: 20px;
+                background: #ddd;
+              }
+            </style>
+
+            <div class="wrapper">
+              <sk-draggable>
+                <vaadin-button>Foo</vaadin-button>
+              </sk-draggable>
+              <sk-dropzone confirm-drop="[[_alertOnDrop]]"></sk-dropzone>
+              <sk-dropzone confirm-drop="[[_confirmDrop]]"></sk-dropzone>
+            </div>
+
+          </template>
+          <script>
+            window.addDemoReadyListener('#dnd-confirm-drop-demo', function(document) {
+              Polymer({
+                is: 'x-confirm',
+
+                properties: {
+                  _alertOnDrop: {
+                    type: Function,
+                    value: function() {
+                      return function() {
+                        alert('Hang tight! Dropping now...');
+                        return true;
+                      };
+                    }
+                  },
+                  _confirmDrop: {
+                    type: Function,
+                    value: function() {
+                      return function() {
+                        return confirm('Are you sure to drop it here? Really?');
+                      };
+                    }
+                  }
+                }
+              });
+            });
+          </script>
+        </dom-module>
+
+      </template>
+    </vaadin-demo-snippet>
+
+    <h3>Process Drop</h3>
+    <vaadin-demo-snippet id="dnd-process-drop-demo">
+      <template preserve-content>
+        <x-process></x-process>
+
+        <dom-module id="x-process">
+          <template preserve-content>
+            <style>
+              .wrapper {
+                overflow: hidden;
+              }
+
+              /* for demonstration purpose only */
+              sk-draggable,
+              sk-dropzone {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100px;
+                height: 100px;
+              }
+
+              sk-draggable {
+                float: left;
+                border: solid 1px gray;
+              }
+
+              sk-dropzone {
+                width: 200px;
+                float: right;
+                display: flex;
+                justify-content: flex-start;
+                margin-left: 20px;
+                background: #ddd;
+              }
+            </style>
+
+            <div class="wrapper">
+              <sk-draggable>
+                <vaadin-button>Foo</vaadin-button>
+              </sk-draggable>
+              <sk-dropzone process-drop="[[_prepend]]">
+                <sk-draggable>
+                  <vaadin-button>Prepend</vaadin-button>
+                </sk-draggable>
+              </sk-dropzone>
+              <sk-dropzone process-drop="[[_replace]]">
+                <sk-draggable>
+                  <vaadin-button>Replace</vaadin-button>
+                </sk-draggable>
+              </sk-dropzone>
+            </div>
+
+          </template>
+          <script>
+            window.addDemoReadyListener('#dnd-process-drop-demo', function(document) {
+              Polymer({
+                is: 'x-process',
+
+                properties: {
+                  _prepend: {
+                    type: Function,
+                    value: function() {
+                      return function(draggable) {
+                        if (!this.firstElementChild) {
+                          return false;
+                        }
+                        this.insertBefore(draggable, this.firstElementChild);
+                        return true;
+                      };
+                    }
+                  },
+                  _replace: {
+                    type: Function,
+                    value: function() {
+                      return function(draggable) {
+                        if (!this.firstElementChild) {
+                          return false;
+                        }
+                        this.replaceChild(draggable, this.firstElementChild);
+                        return true;
+                      };
+                    }
+                  }
+                }
+              });
+            });
+          </script>
+        </dom-module>
+
       </template>
     </vaadin-demo-snippet>
   </div>

@@ -82,6 +82,10 @@ This program is available under Apache License Version 2.0, available at https:/
           }
 
           if (!this._avatar) {
+            if (Math.abs(e.pageX - this._downX) < 5 && Math.abs(e.pageY - this._downY) < 5) {
+              return;
+            }
+
             this._createAvatar();
 
             var coords = this._getCoords(this._draggable);
@@ -98,11 +102,16 @@ This program is available under Apache License Version 2.0, available at https:/
         _onMouseUp(e) {
           if (this._avatar) {
             const dropzone = this._findDropzone(e);
+
             if (dropzone) {
-              dropzone.appendChild(this._draggable);
+              const confirm = this._confirmDrag(dropzone);
+
+              if (confirm) {
+                this._processDrag(dropzone, this._draggable);
+              }
             }
             
-            this._cancelDrag();
+            this._finishDrag();
           }
         }
 
@@ -163,12 +172,27 @@ This program is available under Apache License Version 2.0, available at https:/
           };
         }
 
-        _cancelDrag() {
+        _finishDrag() {
           document.body.removeChild(this._avatar);
           this._draggable = null;
           this._avatar = null;
           this._instance = null;
           this._avatarTemplate = null;
+        }
+
+        _tryAction(dropzone, handler, fallback) {
+          return typeof dropzone[handler] === 'function' ? dropzone[handler].bind(dropzone)(this._draggable) : fallback;
+        }
+
+        _confirmDrag(dropzone) {
+          return this._tryAction(dropzone, 'confirmDrop', true);
+        }
+
+        _processDrag(dropzone) {
+          const isProcessed = this._tryAction(dropzone, 'processDrop', false);
+          if (!isProcessed) {
+            dropzone.appendChild(this._draggable);
+          }
         }
       }
 
