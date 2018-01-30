@@ -19,8 +19,8 @@
               }
 
               /* for demonstration purpose only */
-              sk-draggable,
-              sk-dropzone {
+              [data-draggable],
+              [data-dropzone] {
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -28,12 +28,12 @@
                 height: 100px;
               }
 
-              sk-draggable {
+              [data-draggable] {
                 float: left;
                 border: solid 1px gray;
               }
 
-              sk-dropzone {
+              [data-dropzone] {
                 float: right;
                 margin-left: 20px;
                 background: #ddd;
@@ -41,11 +41,11 @@
             </style>
 
             <div class="wrapper">
-              <sk-draggable>
+              <div data-draggable>
                 <vaadin-button>Foo</vaadin-button>
-              </sk-draggable>
-              <sk-dropzone handle-drag-enter="[[_markRed]]" handle-drag-leave="[[_clearFill]]"></sk-dropzone>
-              <sk-dropzone handle-drag-enter="[[_markBlue]]" handle-drag-leave="[[_clearFill]]"></sk-dropzone>
+              </div>
+              <div data-dropzone handle-drag-enter="[[_markRed]]" handle-drag-leave="[[_clearFill]]"></div>
+              <div data-dropzone handle-drag-enter="[[_markBlue]]" handle-drag-leave="[[_clearFill]]"></div>
             </div>
 
           </template>
@@ -113,8 +113,8 @@
               }
 
               /* for demonstration purpose only */
-              sk-draggable,
-              sk-dropzone {
+              [data-draggable],
+              [data-dropzone] {
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -122,12 +122,12 @@
                 height: 100px;
               }
 
-              sk-draggable {
+              [data-draggable] {
                 float: left;
                 border: solid 1px gray;
               }
 
-              sk-dropzone {
+              [data-dropzone] {
                 float: right;
                 margin-left: 20px;
                 background: #ddd;
@@ -135,11 +135,11 @@
             </style>
 
             <div class="wrapper">
-              <sk-draggable>
+              <div data-draggable>
                 <vaadin-button>Foo</vaadin-button>
-              </sk-draggable>
-              <sk-dropzone confirm-drop="[[_alertOnDrop]]"></sk-dropzone>
-              <sk-dropzone confirm-drop="[[_confirmDrop]]"></sk-dropzone>
+              </div>
+              <div data-dropzone confirm-drop="[[_alertOnDrop]]"></div>
+              <div data-dropzone confirm-drop="[[_confirmDrop]]"></div>
             </div>
 
           </template>
@@ -192,8 +192,8 @@
               }
 
               /* for demonstration purpose only */
-              sk-draggable,
-              sk-dropzone {
+              [data-draggable],
+              [data-dropzone] {
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -201,12 +201,12 @@
                 height: 100px;
               }
 
-              sk-draggable {
+              [data-draggable] {
                 float: left;
                 border: solid 1px gray;
               }
 
-              sk-dropzone {
+              [data-dropzone] {
                 width: 200px;
                 float: right;
                 display: flex;
@@ -217,19 +217,19 @@
             </style>
 
             <div class="wrapper">
-              <sk-draggable>
+              <div data-draggable>
                 <vaadin-button>Foo</vaadin-button>
-              </sk-draggable>
-              <sk-dropzone process-drop="[[_prepend]]">
-                <sk-draggable>
+              </div>
+              <div data-dropzone process-drop="[[_prepend]]">
+                <div data-draggable>
                   <vaadin-button>Prepend</vaadin-button>
-                </sk-draggable>
-              </sk-dropzone>
-              <sk-dropzone process-drop="[[_replace]]">
-                <sk-draggable>
+                </div>
+              </div>
+              <div data-dropzone process-drop="[[_replace]]">
+                <div data-draggable>
                   <vaadin-button>Replace</vaadin-button>
-                </sk-draggable>
-              </sk-dropzone>
+                </div>
+              </div>
             </div>
 
           </template>
@@ -266,7 +266,7 @@
 
   </template>
   <script>
-    class DragBasicDemos extends DemoReadyEventEmitter(ElementDemo(Polymer.Element)) {
+    class DragBasicDemos extends DemoReadyEventEmitter(DragManagerDemo(Polymer.Element)) {
       static get is() {
         return 'drag-basic-demos';
       }

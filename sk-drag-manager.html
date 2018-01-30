@@ -155,15 +155,15 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _findDraggable(e) {
-          const node = this._getNodeFromPath(e, 'sk-draggable');
-          if (node && node.querySelector('[slot="drag-handle"]')) {
-            return this._isDragHandleActive(e) ? node : null;
+          const node = this._getNodeByEvent(e, 'draggable');
+          if (node && node.querySelector('[data-drag-handle]')) {
+            return this._getNodeByEvent(e, 'drag-handle') ? node : null;
           }
           return node;
         }
 
         _findDropzone(e) {
-          return this._getNodeFromPath(e, 'sk-dropzone');
+          return this._getNodeByEvent(e, 'dropzone');
         }
 
         _iterateNodes(e, cb) {
@@ -177,16 +177,11 @@ This program is available under Apache License Version 2.0, available at https:/
           return null;
         }
 
-        _getNodeFromPath(e, nodeName) {
+        _getNodeByEvent(e, attr) {
+          const prop = Polymer.CaseMap.dashToCamelCase(attr);
           return this._iterateNodes(e, node => {
-            return node.nodeType === Node.ELEMENT_NODE && node.localName.toLowerCase() === nodeName;
+            return node.nodeType === Node.ELEMENT_NODE && node.dataset && node.dataset.hasOwnProperty(prop);
           });
-        }
-
-        _isDragHandleActive(e) {
-          return Boolean(this._iterateNodes(e, node => {
-            return node.nodeType === Node.ELEMENT_NODE && node.getAttribute('slot') === 'drag-handle';
-          }));
         }
 
         _createGhost() {

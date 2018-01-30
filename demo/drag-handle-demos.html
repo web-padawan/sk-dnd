@@ -19,8 +19,8 @@
               }
 
               /* for demonstration purpose only */
-              sk-draggable,
-              sk-dropzone {
+              [data-draggable],
+              [data-dropzone] {
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -28,12 +28,18 @@
                 height: 100px;
               }
 
-              sk-draggable {
+              [data-draggable] {
                 float: left;
                 border: solid 1px gray;
+                position: relative;
               }
 
-              sk-dropzone {
+              [data-drag-handle] {
+                cursor: -webkit-grab;
+                cursor: grab;
+              }
+
+              [data-dropzone] {
                 float: right;
                 margin-left: 20px;
                 background: #ddd;
@@ -41,11 +47,11 @@
             </style>
 
             <div class="wrapper">
-              <sk-draggable>
+              <div data-draggable>
                 <vaadin-button>Foo</vaadin-button>
-                <iron-icon icon="lumo:cog" slot="drag-handle"></iron-icon>
-              </sk-draggable>
-              <sk-dropzone></sk-dropzone>
+                <iron-icon icon="lumo:cog" data-drag-handle></iron-icon>
+              </div>
+              <div data-dropzone></div>
             </div>
 
           </template>
@@ -64,7 +70,7 @@
 
   </template>
   <script>
-    class DragHandleDemos extends DemoReadyEventEmitter(ElementDemo(Polymer.Element)) {
+    class DragHandleDemos extends DemoReadyEventEmitter(DragManagerDemo(Polymer.Element)) {
       static get is() {
         return 'drag-handle-demos';
       }
