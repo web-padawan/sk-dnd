@@ -31,6 +31,30 @@ This program is available under Apache License Version 2.0, available at https:/
         }
       };
 
+      function iterateNodes(e, cb) {
+        const path = e.composedPath();
+        for (let i = 0; i < path.length; i++) {
+          const node = path[i];
+          if (cb(node)) {
+            return node;
+          }
+        }
+        return null;
+      }
+
+      function getNodeByEvent(e, attr) {
+        const prop = Polymer.CaseMap.dashToCamelCase(attr);
+        return iterateNodes(e, node => {
+          return node.nodeType === Node.ELEMENT_NODE && node.dataset && node.dataset.hasOwnProperty(prop);
+        });
+      }
+
+      const TargetDetector = {
+        draggable: e => getNodeByEvent(e, 'draggable'),
+        dropzone: e => getNodeByEvent(e, 'dropzone'),
+        dragHandle: e => getNodeByEvent(e, 'drag-handle')
+      };
+
       /**
        * @memberof Vaadin
        */
@@ -160,33 +184,15 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _findDraggable(e) {
-          const node = this._getNodeByEvent(e, 'draggable');
+          const node = Vaadin.SkDragManager.TargetDetector.draggable(e);
           if (node && node.querySelector('[data-drag-handle]')) {
-            return this._getNodeByEvent(e, 'drag-handle') ? node : null;
+            return Vaadin.SkDragManager.TargetDetector.dragHandle(e) ? node : null;
           }
           return node;
         }
 
         _findDropzone(e) {
-          return this._getNodeByEvent(e, 'dropzone');
-        }
-
-        _iterateNodes(e, cb) {
-          const path = e.composedPath();
-          for (let i = 0; i < path.length; i++) {
-            const node = path[i];
-            if (cb(node)) {
-              return node;
-            }
-          }
-          return null;
-        }
-
-        _getNodeByEvent(e, attr) {
-          const prop = Polymer.CaseMap.dashToCamelCase(attr);
-          return this._iterateNodes(e, node => {
-            return node.nodeType === Node.ELEMENT_NODE && node.dataset && node.dataset.hasOwnProperty(prop);
-          });
+          return Vaadin.SkDragManager.TargetDetector.dropzone(e);
         }
 
         _createGhost() {
@@ -296,6 +302,7 @@ This program is available under Apache License Version 2.0, available at https:/
       document.body.appendChild(Vaadin.SkDragManager.instance);
 
       Vaadin.SkDragManager.DropHandlers = DropHandlers;
+      Vaadin.SkDragManager.TargetDetector = TargetDetector;
     })();
   </script>
 </dom-module>
