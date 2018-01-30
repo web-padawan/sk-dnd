@@ -136,16 +136,17 @@ This program is available under Apache License Version 2.0, available at https:/
             const dropzone = this._findDropzone(e);
 
             if (dropzone) {
-              const confirm = this._confirmDrag(dropzone);
-
-              if (confirm) {
+              this._confirmDrag(dropzone).then(() => {
                 this._processDrag(dropzone, this._draggable);
-              }
+                this._finishDrag();
+              }).catch(() => {
+                this._finishDrag();
+              });
 
               this._markDragLeave(dropzone);
+            } else {
+              this._finishDrag();
             }
-
-            this._finishDrag();
           }
         }
 
@@ -269,7 +270,7 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _confirmDrag(dropzone) {
-          return this._tryAction(dropzone, 'confirmDrop', true, this._draggable);
+          return this._tryAction(dropzone, 'confirmDrop', Promise.resolve(), this._draggable);
         }
 
         _processDrag(dropzone) {

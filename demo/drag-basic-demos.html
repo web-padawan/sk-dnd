@@ -153,8 +153,10 @@
                     type: Function,
                     value: function() {
                       return function() {
-                        alert('Hang tight! Dropping now...');
-                        return true;
+                        return new Promise((resolve, reject) => {
+                          alert('Hang tight! Dropping now...');
+                          resolve();
+                        });
                       };
                     }
                   },
@@ -162,7 +164,9 @@
                     type: Function,
                     value: function() {
                       return function() {
-                        return confirm('Are you sure to drop it here? Really?');
+                        return new Promise((resolve, reject) => {
+                          confirm('Are you sure to drop it here? Really?') ? resolve() : reject();
+                        });
                       };
                     }
                   }
