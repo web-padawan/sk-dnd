@@ -101,16 +101,16 @@ This program is available under Apache License Version 2.0, available at https:/
             return;
           }
 
-          if (!this._avatar) {
+          if (!this._ghost) {
             if (Math.abs(e.pageX - this._downX) < 5 && Math.abs(e.pageY - this._downY) < 5) {
               return;
             }
 
-            this._createAvatar();
+            this._createGhost();
 
             this._getPointerShift();
 
-            this._copyStylesToAvatar();
+            this._copyStylesToGhost();
 
             this._startDrag();
           }
@@ -126,12 +126,12 @@ This program is available under Apache License Version 2.0, available at https:/
             this._markDragEnter(this._targetElement);
           }
 
-          this._avatar.style.left = e.pageX - this._shiftX + 'px';
-          this._avatar.style.top = e.pageY - this._shiftY + 'px';
+          this._ghost.style.left = e.pageX - this._shiftX + 'px';
+          this._ghost.style.top = e.pageY - this._shiftY + 'px';
         }
 
         _onMouseUp(e) {
-          if (this._avatar) {
+          if (this._ghost) {
 
             const dropzone = this._findDropzone(e);
 
@@ -188,21 +188,21 @@ This program is available under Apache License Version 2.0, available at https:/
           }));
         }
 
-        _createAvatar() {
-          var avatar = this._draggable.cloneNode(true);
+        _createGhost() {
+          var ghost = this._draggable.cloneNode(true);
 
           /*
           TODO: uncomment
-          this._avatarTemplate = document.createElement('template');
-          this._avatarTemplate.content.appendChild(avatar);
-          const Templatizer = Polymer.Templatize.templatize(this._avatarTemplate, this, {});
+          this._ghostTemplate = document.createElement('template');
+          this._ghostTemplate.content.appendChild(ghost);
+          const Templatizer = Polymer.Templatize.templatize(this._ghostTemplate, this, {});
 
           this._instance = new Templatizer({});
           const div = document.createElement('div');
           div.appendChild(this._instance.root);
-          this._avatar = div.firstElementChild;
+          this._ghost = div.firstElementChild;
           */
-          this._avatar = avatar;
+          this._ghost = ghost;
         }
 
         _getPointerShift() {
@@ -215,9 +215,9 @@ This program is available under Apache License Version 2.0, available at https:/
           return /^(position|z|top|left|float|flex|grid|order|webkit)/.test(prop);
         }
 
-        _copyStylesToAvatar() {
+        _copyStylesToGhost() {
           const source = window.getComputedStyle(this._draggable);
-          const target = this._avatar.style;
+          const target = this._ghost.style;
           for (var prop in source) {
             if (source.hasOwnProperty(prop) && !this._needSkipProp(prop)) {
               target[prop] = source[prop];
@@ -226,11 +226,11 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _startDrag() {
-          this._avatar.style.position = 'absolute';
-          this._avatar.style.zIndex = '9999';
-          this._avatar.style.pointerEvents = 'none';
-          this._avatar.setAttribute('dragging', '');
-          document.body.appendChild(this._avatar);
+          this._ghost.style.position = 'absolute';
+          this._ghost.style.zIndex = '9999';
+          this._ghost.style.pointerEvents = 'none';
+          this._ghost.setAttribute('dragging', '');
+          document.body.appendChild(this._ghost);
         }
 
         _getCoords(elem) {
@@ -243,11 +243,11 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _finishDrag() {
-          document.body.removeChild(this._avatar);
+          document.body.removeChild(this._ghost);
           this._draggable = null;
-          this._avatar = null;
-          this._instance = null;
-          this._avatarTemplate = null;
+          this._ghost = null;
+          // this._instance = null;
+          // this._ghostTemplate = null;
         }
 
         _tryAction(target, handler, fallback, param) {
@@ -255,14 +255,14 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _markDragEnter(dropzone) {
-          const isProcessed = this._tryAction(dropzone, 'handleDragEnter', false, this._avatar);
+          const isProcessed = this._tryAction(dropzone, 'handleDragEnter', false, this._ghost);
           if (!isProcessed) {
             dropzone.classList.add('drag-over');
           }
         }
 
         _markDragLeave(dropzone) {
-          const isProcessed = this._tryAction(dropzone, 'handleDragLeave', false, this._avatar);
+          const isProcessed = this._tryAction(dropzone, 'handleDragLeave', false, this._ghost);
           if (!isProcessed) {
             dropzone.classList.remove('drag-over');
           }
