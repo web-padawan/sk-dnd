@@ -131,11 +131,14 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _onMouseUp(e) {
+          let finish = true;
+
           if (this._ghost) {
 
             const dropzone = this._findDropzone(e);
 
             if (dropzone) {
+              finish = false;
               this._confirmDrag(dropzone).then(() => {
                 this._processDrag(dropzone, this._draggable);
                 this._finishDrag();
@@ -144,9 +147,11 @@ This program is available under Apache License Version 2.0, available at https:/
               });
 
               this._markDragLeave(dropzone);
-            } else {
-              this._finishDrag();
             }
+          }
+
+          if (finish) {
+            this._finishDrag();
           }
         }
 
@@ -239,9 +244,12 @@ This program is available under Apache License Version 2.0, available at https:/
         }
 
         _finishDrag() {
-          document.body.removeChild(this._ghost);
           this._draggable = null;
-          this._ghost = null;
+
+          if (this._ghost) {
+            document.body.removeChild(this._ghost);
+            this._ghost = null;
+          }
           // this._instance = null;
           // this._ghostTemplate = null;
         }
