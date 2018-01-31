@@ -1,0 +1,86 @@
+<link rel="import" href="sk-dnd-helper.html">
+
+<script>
+  (function() {
+
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.Dnd = window.Vaadin.Dnd || {};
+
+    class DndDropZone extends Vaadin.Dnd.Helper {
+
+      initFromEvent(e) {
+        return this._getNodeByEvent(e, 'dropzone');
+      }
+
+      checkState(e) {
+        const dropZone = this.initFromEvent(e);
+
+        if (this.instance && this.instance !== dropZone) {
+          this._leaveDropZone();
+        }
+
+        if (dropZone) {
+          Vaadin.Dnd.dropZone = dropZone;
+          this._enterDropZone();
+        }
+      }
+
+      finishDrag(dragTarget) {
+        return new Promise((resolve) => {
+          this._confirmDrag(dragTarget).then(() => {
+            this._processDrag(dragTarget);
+            resolve();
+          }).catch(() => {
+            resolve();
+          });
+        });
+      }
+
+      _invoke(handler, fallback, param) {
+        const target = this.instance;
+        return typeof target[handler] === 'function' ? target[handler].bind(target)(param) : fallback;
+      }
+
+      _enterDropZone() {
+        const isProcessed = this._invoke('handleDragEnter', false);
+        if (!isProcessed) {
+          this.instance.classList.add('drag-over');
+        }
+      }
+
+      _leaveDropZone() {
+        const isProcessed = this._invoke('handleDragLeave', false);
+        if (!isProcessed) {
+          this.instance.classList.remove('drag-over');
+        }
+      }
+
+      _confirmDrag(dragTarget) {
+        return this._invoke('confirmDrop', Promise.resolve(), dragTarget);
+      }
+
+      _processDrag(dragTarget) {
+        const isProcessed = this._invoke('processDrop', false, dragTarget);
+        if (!isProcessed) {
+          this.instance.appendChild(dragTarget);
+        }
+      }
+
+      cleanup() {
+        if (Vaadin.Dnd.dropZone) {
+          this._leaveDropZone();
+        }
+        Vaadin.Dnd.dropZone = null;
+      }
+
+      get instance() {
+        return Vaadin.Dnd.dropZone;
+      }
+    }
+
+    /**
+     * @namespace Vaadin
+     */
+    Vaadin.Dnd.DropZone = DndDropZone;
+  })();
+</script>

@@ -1,0 +1,32 @@
+<script>
+  (function() {
+
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.Dnd = window.Vaadin.Dnd || {};
+
+    const Utils = {
+      append: function(host, target) {
+        host.appendChild(target);
+      },
+      prepend: function(host, target) {
+        if (host.firstElementChild) {
+          host.insertBefore(target, host.firstElementChild);
+        } else {
+          this.append(host, target);
+        }
+      },
+      replace: function(host, target) {
+        if (host.firstElementChild) {
+          host.replaceChild(target, host.firstElementChild);
+        } else {
+          this.append(host, target);
+        }
+      }
+    };
+
+    /**
+     * @namespace Vaadin
+     */
+    Vaadin.Dnd.Utils = Utils;
+  })();
+</script>

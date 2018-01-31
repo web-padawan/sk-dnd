@@ -1,0 +1,58 @@
+<script>
+  (function() {
+
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.Dnd = window.Vaadin.Dnd || {};
+
+    class DndGhostManager {
+      init(node) {
+        Vaadin.Dnd.ghost = node.cloneNode(true);
+      }
+
+      fill(node) {
+        const ghost = Vaadin.Dnd.ghost;
+        const source = window.getComputedStyle(node);
+        const target = ghost.style;
+        for (var prop in source) {
+          // firefox lists properties
+          if (!isNaN(parseInt(prop, 10))) {
+            continue;
+          }
+          if (source.hasOwnProperty(prop) && !/^(position|top|left|float|flex|grid|order)/.test(prop)) {
+            target[prop] = source[prop];
+          }
+        }
+      }
+
+      attach() {
+        const ghost = Vaadin.Dnd.ghost;
+        ghost.style.position = 'absolute';
+        ghost.style.zIndex = '9999';
+        ghost.style.pointerEvents = 'none';
+        ghost.setAttribute('dragging', '');
+        document.body.appendChild(ghost);
+      }
+
+      move(x, y) {
+        Vaadin.Dnd.ghost.style.left = x + 'px';
+        Vaadin.Dnd.ghost.style.top = y + 'px';
+      }
+
+      cleanup() {
+        if (Vaadin.Dnd.ghost) {
+          document.body.removeChild(Vaadin.Dnd.ghost);
+        }
+        Vaadin.Dnd.ghost = null;
+      }
+
+      get active() {
+        return Vaadin.Dnd.ghost;
+      }
+    }
+
+    /**
+     * @namespace Vaadin
+     */
+    Vaadin.Dnd.GhostManager = DndGhostManager;
+  })();
+</script>

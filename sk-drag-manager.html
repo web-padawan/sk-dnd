@@ -5,86 +5,21 @@ This program is available under Apache License Version 2.0, available at https:/
 -->
 
 <link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../polymer/lib/utils/templatize.html">
+<link rel="import" href="sk-dnd-ghost.html">
+<link rel="import" href="sk-dnd-drag-target.html">
+<link rel="import" href="sk-dnd-drop-zone.html">
+<link rel="import" href="sk-dnd-utils.html">
 
 <dom-module id="sk-drag-manager">
   <script>
     (function() {
 
-      const DropHandlers = {
-        append: function(host, target) {
-          host.appendChild(target);
-        },
-        prepend: function(host, target) {
-          if (host.firstElementChild) {
-            host.insertBefore(target, host.firstElementChild);
-          } else {
-            this.append(host, target);
-          }
-        },
-        replace: function(host, target) {
-          if (host.firstElementChild) {
-            host.replaceChild(target, host.firstElementChild);
-          } else {
-            this.append(host, target);
-          }
-        }
-      };
-
-      function iterateNodes(e, cb) {
-        const path = e.composedPath();
-        for (let i = 0; i < path.length; i++) {
-          const node = path[i];
-          if (cb(node)) {
-            return node;
-          }
-        }
-        return null;
-      }
-
-      function getNodeByEvent(e, attr) {
-        const prop = Polymer.CaseMap.dashToCamelCase(attr);
-        return iterateNodes(e, node => {
-          return node.nodeType === Node.ELEMENT_NODE && node.dataset && node.dataset.hasOwnProperty(prop);
-        });
-      }
-
-      const TargetDetector = {
-        draggable: e => getNodeByEvent(e, 'draggable'),
-        dropzone: e => getNodeByEvent(e, 'dropzone'),
-        dragHandle: e => getNodeByEvent(e, 'drag-handle')
-      };
-
       /**
        * @memberof Vaadin
        */
-      class SkDragManager extends Polymer.Element {
+      class DragManager extends Polymer.Element {
         static get is() {
           return 'sk-drag-manager';
-        }
-
-        static get properties() {
-          return {
-            _downX: {
-              type: Number
-            },
-
-            _downY: {
-              type: Number
-            },
-
-            _draggable: {
-              type: Object
-            },
-
-            _shiftX: {
-              type: Number
-            },
-
-            _shiftY: {
-              type: Number
-            }
-          };
         }
 
         constructor() {
@@ -93,216 +28,90 @@ This program is available under Apache License Version 2.0, available at https:/
           this._boundOnMouseDown = this._onMouseDown.bind(this);
           this._boundOnMouseMove = this._onMouseMove.bind(this);
           this._boundOnMouseUp = this._onMouseUp.bind(this);
-          this._boundOnDragStart = this._onDragStart.bind(this);
         }
 
         ready() {
           super.ready();
 
+          this.init();
+
           document.addEventListener('mousedown', this._boundOnMouseDown);
           document.addEventListener('mousemove', this._boundOnMouseMove);
           document.addEventListener('mouseup', this._boundOnMouseUp);
-          document.addEventListener('dragstart', this._boundOnDragStart);
+        }
+
+        init() {
+          this._ghostManager = new Vaadin.Dnd.GhostManager();
+          this._dragTarget = new Vaadin.Dnd.DragTarget();
+          this._dropZone = new Vaadin.Dnd.DropZone();
+        }
+
+        cleanup() {
+          this._dragTarget.cleanup();
+          this._dropZone.cleanup();
+          this._ghostManager.cleanup();
         }
 
         _onMouseDown(e) {
-          if (e.which !== 1) {
-            return;
-          }
-
-          var elem = this._findDraggable(e);
-          if (!elem) {
-            return;
-          }
-
-          this._draggable = elem;
-          this._downX = e.pageX;
-          this._downY = e.pageY;
+          this._dragTarget.initFromEvent(e);
         }
 
         _onMouseMove(e) {
-          if (!this._draggable) {
+          const dragTarget = this._dragTarget.instance;
+
+          if (!dragTarget) {
             return;
           }
 
-          if (!this._ghost) {
-            if (Math.abs(e.pageX - this._downX) < 5 && Math.abs(e.pageY - this._downY) < 5) {
+          if (!this._ghostManager.active) {
+            if (!this._dragTarget.isDragStarted(e)) {
               return;
             }
 
-            this._createGhost();
+            this._ghostManager.init(dragTarget);
 
-            this._getPointerShift();
+            this._dragTarget.setPointerShift();
 
-            this._copyStylesToGhost();
+            this._ghostManager.fill(dragTarget);
 
-            this._startDrag();
+            this._ghostManager.attach();
           }
 
-          const target = this._findDropzone(e);
+          this._dropZone.checkState(e);
 
-          if (this._targetElement && this._targetElement !== target) {
-            this._markDragLeave(this._targetElement);
-          }
-
-          if (target) {
-            this._targetElement = target;
-            this._markDragEnter(this._targetElement);
-          }
-
-          this._ghost.style.left = e.pageX - this._shiftX + 'px';
-          this._ghost.style.top = e.pageY - this._shiftY + 'px';
+          const point = this._dragTarget.adjustPointer(e);
+          this._ghostManager.move(point.x, point.y);
         }
 
         _onMouseUp(e) {
-          let finish = true;
+          let cleanup = true;
 
-          if (this._ghost) {
-
-            const dropzone = this._findDropzone(e);
+          if (this._ghostManager.active) {
+            const dropzone = this._dropZone.instance;
 
             if (dropzone) {
-              finish = false;
-              this._confirmDrag(dropzone).then(() => {
-                this._processDrag(dropzone, this._draggable);
-                this._finishDrag();
-              }).catch(() => {
-                this._finishDrag();
-              });
-
-              this._markDragLeave(dropzone);
+              cleanup = false;
+              this._dropZone.finishDrag(this._dragTarget.instance).then(this.cleanup.bind(this));
             }
           }
 
-          if (finish) {
-            this._finishDrag();
-          }
-        }
-
-        _onDragStart(e) {
-          e.preventDefault();
-        }
-
-        _findDraggable(e) {
-          const node = Vaadin.SkDragManager.TargetDetector.draggable(e);
-          if (node && node.querySelector('[data-drag-handle]')) {
-            return Vaadin.SkDragManager.TargetDetector.dragHandle(e) ? node : null;
-          }
-          return node;
-        }
-
-        _findDropzone(e) {
-          return Vaadin.SkDragManager.TargetDetector.dropzone(e);
-        }
-
-        _createGhost() {
-          var ghost = this._draggable.cloneNode(true);
-
-          /*
-          TODO: uncomment
-          this._ghostTemplate = document.createElement('template');
-          this._ghostTemplate.content.appendChild(ghost);
-          const Templatizer = Polymer.Templatize.templatize(this._ghostTemplate, this, {});
-
-          this._instance = new Templatizer({});
-          const div = document.createElement('div');
-          div.appendChild(this._instance.root);
-          this._ghost = div.firstElementChild;
-          */
-          this._ghost = ghost;
-        }
-
-        _getPointerShift() {
-          const coords = this._getCoords(this._draggable);
-          this._shiftX = this._downX - coords.left;
-          this._shiftY = this._downY - coords.top;
-        }
-
-        _needSkipProp(prop) {
-          return /^(position|z|top|left|float|flex|grid|order|webkit)/.test(prop);
-        }
-
-        _copyStylesToGhost() {
-          const source = window.getComputedStyle(this._draggable);
-          const target = this._ghost.style;
-          for (var prop in source) {
-            if (source.hasOwnProperty(prop) && !this._needSkipProp(prop)) {
-              target[prop] = source[prop];
-            }
-          }
-        }
-
-        _startDrag() {
-          this._ghost.style.position = 'absolute';
-          this._ghost.style.zIndex = '9999';
-          this._ghost.style.pointerEvents = 'none';
-          this._ghost.setAttribute('dragging', '');
-          document.body.appendChild(this._ghost);
-        }
-
-        _getCoords(elem) {
-          var box = elem.getBoundingClientRect();
-
-          return {
-            top: box.top + pageYOffset,
-            left: box.left + pageXOffset
-          };
-        }
-
-        _finishDrag() {
-          this._draggable = null;
-
-          if (this._ghost) {
-            document.body.removeChild(this._ghost);
-            this._ghost = null;
-          }
-          // this._instance = null;
-          // this._ghostTemplate = null;
-        }
-
-        _tryAction(target, handler, fallback, param) {
-          return typeof target[handler] === 'function' ? target[handler].bind(target)(param) : fallback;
-        }
-
-        _markDragEnter(dropzone) {
-          const isProcessed = this._tryAction(dropzone, 'handleDragEnter', false, this._ghost);
-          if (!isProcessed) {
-            dropzone.classList.add('drag-over');
-          }
-        }
-
-        _markDragLeave(dropzone) {
-          const isProcessed = this._tryAction(dropzone, 'handleDragLeave', false, this._ghost);
-          if (!isProcessed) {
-            dropzone.classList.remove('drag-over');
-          }
-        }
-
-        _confirmDrag(dropzone) {
-          return this._tryAction(dropzone, 'confirmDrop', Promise.resolve(), this._draggable);
-        }
-
-        _processDrag(dropzone) {
-          const isProcessed = this._tryAction(dropzone, 'processDrop', false, this._draggable);
-          if (!isProcessed) {
-            dropzone.appendChild(this._draggable);
+          if (cleanup) {
+            this.cleanup();
           }
         }
       }
 
-      customElements.define(SkDragManager.is, SkDragManager);
+      customElements.define(DragManager.is, DragManager);
 
       /**
        * @namespace Vaadin
        */
       window.Vaadin = window.Vaadin || {};
-      Vaadin.SkDragManager = SkDragManager;
+      Vaadin.Dnd = window.Vaadin.Dnd || {};
+      Vaadin.Dnd.Manager = DragManager;
 
-      Vaadin.SkDragManager.instance = document.createElement('sk-drag-manager');
-      document.body.appendChild(Vaadin.SkDragManager.instance);
-
-      Vaadin.SkDragManager.DropHandlers = DropHandlers;
-      Vaadin.SkDragManager.TargetDetector = TargetDetector;
+      Vaadin.Dnd.Manager.instance = document.createElement('sk-drag-manager');
+      document.body.appendChild(Vaadin.Dnd.Manager.instance);
     })();
   </script>
 </dom-module>

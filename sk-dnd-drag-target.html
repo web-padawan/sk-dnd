@@ -1,0 +1,74 @@
+<link rel="import" href="sk-dnd-helper.html">
+
+<script>
+  (function() {
+
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.Dnd = window.Vaadin.Dnd || {};
+
+    class DndDragTarget extends Vaadin.Dnd.Helper {
+
+      initFromEvent(e) {
+        if (e.which !== 1) {
+          return;
+        }
+
+        const dragTarget = this._getDragTarget(e);
+        if (!dragTarget) {
+          return;
+        }
+
+        Vaadin.Dnd.dragTarget = dragTarget;
+        this._downX = e.pageX;
+        this._downY = e.pageY;
+      }
+
+      cleanup() {
+        Vaadin.Dnd.dragTarget = null;
+      }
+
+      isDragStarted(e) {
+        return Math.abs(e.pageX - this._downX) < 5 && Math.abs(e.pageY - this._downY) < 5;
+      }
+
+      setPointerShift() {
+        const coords = this._getCoords(this.instance);
+        this._shiftX = this._downX - coords.left;
+        this._shiftY = this._downY - coords.top;
+      }
+
+      adjustPointer(e) {
+        return {
+          x: e.pageX - this._shiftX,
+          y: e.pageY - this._shiftY
+        };
+      }
+
+      _getCoords(elem) {
+        var box = elem.getBoundingClientRect();
+
+        return {
+          top: box.top + pageYOffset,
+          left: box.left + pageXOffset
+        };
+      }
+
+      _getDragTarget(e) {
+        const node = this._getNodeByEvent(e, 'draggable');
+        if (node && node.querySelector('[data-drag-handle]')) {
+          return this._getNodeByEvent(e, 'drag-handle') ? node : null;
+        }
+        return node;
+      }
+
+      get instance() {
+        return Vaadin.Dnd.dragTarget;
+      }
+    }
+
+    /**
+     * @namespace Vaadin
+     */
+    Vaadin.Dnd.DragTarget = DndDragTarget;
+  })();
+</script>

@@ -44,8 +44,8 @@
               <div data-draggable>
                 <vaadin-button>Foo</vaadin-button>
               </div>
-              <div data-dropzone handle-drag-enter="[[_markRed]]" handle-drag-leave="[[_clearFill]]"></div>
-              <div data-dropzone handle-drag-enter="[[_markBlue]]" handle-drag-leave="[[_clearFill]]"></div>
+              <div data-dropzone handle-drag-enter="[[_fillGold]]" handle-drag-leave="[[_clearFill]]"></div>
+              <div data-dropzone handle-drag-enter="[[_fillBlue]]" handle-drag-leave="[[_clearFill]]"></div>
             </div>
 
           </template>
@@ -58,35 +58,26 @@
                   _clearFill: {
                     type: Function,
                     value: function() {
-                      return function(target) {
+                      return function() {
                         this.style.backgroundColor = '';
-                        target.style.borderColor = '';
-                        target.style.borderWidth = '';
-                        target.style.borderStyle = '';
                         return true;
                       };
                     }
                   },
-                  _markRed: {
+                  _fillGold: {
                     type: Function,
                     value: function() {
-                      return function(target) {
-                        this.style.backgroundColor = '#eee';
-                        target.style.borderColor = 'red';
-                        target.style.borderWidth = '1px';
-                        target.style.borderStyle = 'solid';
+                      return function() {
+                        this.style.backgroundColor = '#fc0';
                         return true;
                       };
                     }
                   },
-                  _markBlue: {
+                  _fillBlue: {
                     type: Function,
                     value: function() {
-                      return function(target) {
-                        this.style.backgroundColor = '#eee';
-                        target.style.borderColor = 'blue';
-                        target.style.borderWidth = '1px';
-                        target.style.borderStyle = 'solid';
+                      return function() {
+                        this.style.backgroundColor = '#0cf';
                         return true;
                       };
                     }
@@ -243,7 +234,7 @@
                     type: Function,
                     value: function() {
                       return function(draggable) {
-                        return Vaadin.SkDragManager.DropHandlers.prepend(this, draggable);
+                        return Vaadin.Dnd.Utils.prepend(this, draggable);
                       };
                     }
                   },
@@ -251,7 +242,7 @@
                     type: Function,
                     value: function() {
                       return function(draggable) {
-                        return Vaadin.SkDragManager.DropHandlers.replace(this, draggable);
+                        return Vaadin.Dnd.Utils.replace(this, draggable);
                       };
                     }
                   }

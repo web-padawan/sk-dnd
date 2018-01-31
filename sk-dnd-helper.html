@@ -1,0 +1,38 @@
+<link rel="import" href="../polymer/lib/utils/case-map.html">
+
+<script>
+  (function() {
+
+    window.Vaadin = window.Vaadin || {};
+    Vaadin.Dnd = window.Vaadin.Dnd || {};
+
+    /**
+     * @memberof Vaadin
+     */
+    class DndHelper {
+
+      _iterateNodes(e, cb) {
+        const path = e.composedPath();
+        for (let i = 0; i < path.length; i++) {
+          const node = path[i];
+          if (cb(node)) {
+            return node;
+          }
+        }
+        return null;
+      }
+
+      _getNodeByEvent(e, attr) {
+        const prop = Polymer.CaseMap.dashToCamelCase(attr);
+        return this._iterateNodes(e, node => {
+          return node.nodeType === Node.ELEMENT_NODE && node.dataset && node.dataset.hasOwnProperty(prop);
+        });
+      }
+    }
+
+    /**
+     * @namespace Vaadin
+     */
+    Vaadin.Dnd.Helper = DndHelper;
+  })();
+</script>
