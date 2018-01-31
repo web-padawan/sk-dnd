@@ -10,7 +10,7 @@ This program is available under Apache License Version 2.0, available at https:/
 <link rel="import" href="sk-dnd-drop-zone.html">
 <link rel="import" href="sk-dnd-utils.html">
 
-<dom-module id="sk-drag-manager">
+<dom-module id="sk-dnd-manager">
   <script>
     (function() {
 
@@ -19,7 +19,7 @@ This program is available under Apache License Version 2.0, available at https:/
        */
       class DragManager extends Polymer.Element {
         static get is() {
-          return 'sk-drag-manager';
+          return 'sk-dnd-manager';
         }
 
         constructor() {
@@ -110,7 +110,7 @@ This program is available under Apache License Version 2.0, available at https:/
       Vaadin.Dnd = window.Vaadin.Dnd || {};
       Vaadin.Dnd.Manager = DragManager;
 
-      Vaadin.Dnd.Manager.instance = document.createElement('sk-drag-manager');
+      Vaadin.Dnd.Manager.instance = document.createElement('sk-dnd-manager');
       document.body.appendChild(Vaadin.Dnd.Manager.instance);
     })();
   </script>

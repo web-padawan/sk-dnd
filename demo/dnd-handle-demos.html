@@ -1,4 +1,4 @@
-<dom-module id="drag-handle-demos">
+<dom-module id="dnd-handle-demos">
   <template>
     <style>
       :host {
@@ -70,11 +70,11 @@
 
   </template>
   <script>
-    class DragHandleDemos extends DemoReadyEventEmitter(DragManagerDemo(Polymer.Element)) {
+    class DndHandleDemos extends DemoReadyEventEmitter(DndManagerDemo(Polymer.Element)) {
       static get is() {
-        return 'drag-handle-demos';
+        return 'dnd-handle-demos';
       }
     }
-    customElements.define(DragHandleDemos.is, DragHandleDemos);
+    customElements.define(DndHandleDemos.is, DndHandleDemos);
   </script>
 </dom-module>

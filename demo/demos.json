@@ -3,8 +3,8 @@
   "pages": [
   {
     "name": "Basic Examples",
-    "url": "drag-basic-demos",
-    "src": "drag-basic-demos.html",
+    "url": "dnd-basic-demos",
+    "src": "dnd-basic-demos.html",
     "meta": {
       "title": "sk-dnd Basic Examples",
       "description": "",
@@ -13,8 +13,8 @@
   },
   {
     "name": "Drag Handle",
-    "url": "drag-handle-demos",
-    "src": "drag-handle-demos.html",
+    "url": "dnd-handle-demos",
+    "src": "dnd-handle-demos.html",
     "meta": {
       "title": "sk-dnd Drag Handle Examples",
       "description": "",

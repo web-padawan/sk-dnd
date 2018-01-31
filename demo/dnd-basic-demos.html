@@ -1,4 +1,4 @@
-<dom-module id="drag-basic-demos">
+<dom-module id="dnd-basic-demos">
   <template>
     <style>
       :host {
@@ -257,11 +257,11 @@
 
   </template>
   <script>
-    class DragBasicDemos extends DemoReadyEventEmitter(DragManagerDemo(Polymer.Element)) {
+    class DndBasicDemos extends DemoReadyEventEmitter(DndManagerDemo(Polymer.Element)) {
       static get is() {
-        return 'drag-basic-demos';
+        return 'dnd-basic-demos';
       }
     }
-    customElements.define(DragBasicDemos.is, DragBasicDemos);
+    customElements.define(DndBasicDemos.is, DndBasicDemos);
   </script>
 </dom-module>
