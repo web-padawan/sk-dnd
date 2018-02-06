@@ -22,6 +22,8 @@
         if (dropZone) {
           Vaadin.Dnd.dropZone = dropZone;
           this._enterDropZone();
+        } else {
+          Vaadin.Dnd.dropZone = null;
         }
       }
 
